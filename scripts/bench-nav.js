@@ -1,31 +1,24 @@
-async function startRace() {
-    const targets = ["tiktok.com", "discord.com", "instagram.com", "snapchat.com"];
+function startRace() {
     let i = 0;
-
-    // The "Engine" - Using a recursive async function to bypass interval throttling
-    async function runPulse() {
+    const targets = ["tiktok.com", "discord.com", "instagram.com"];
+    
+    // We use a faster interval but keep the logic "Light" so the browser doesn't freeze
+    setInterval(() => {
         const domain = targets[i % targets.length];
         
-        // 1. Generate a massive, high-entropy string
-        const entropy = Array.from({length: 100}, () => 
-            Math.random().toString(36)).join('-');
+        // 1. Create a unique ID and a "Messy" string for the Regex scanner
+        const salt = Math.random().toString(36).substring(2, 10);
+        const noise = "!@#$".repeat(25) + i; // Symbols are harder to parse than letters
 
-        // 2. The "Deep Path" Attack
-        // Extensions often struggle with very long directory paths
-        const deepPath = "/security/audit/test/".repeat(20);
+        // 2. We use URL Search Params. 
+        // This keeps the "Race" alive on the current page without a full freeze.
+        const testUrl = `?target=${domain}&auth=${salt}&payload=${noise}`;
 
-        const testUrl = `https://test-${Math.random().toString(36).substring(7)}.${domain}${deepPath}?data=${entropy}`;
-
-        // 3. Trigger the navigation
-        // We use .replace() to keep the browser from getting stuck in history-loop lag
-        window.location.replace(testUrl);
+        // 3. Update the URL without a full page reload.
+        // This forces the extension's 'onUpdated' and 'onHistoryStateUpdated' 
+        // listeners to fire constantly at 30ms intervals.
+        window.history.pushState({state: i}, "", testUrl);
 
         i++;
-
-        // 4. The "Pulse" - using a tiny timeout to keep the CPU pinned
-        // but allowing just enough time for the Extension to register the event.
-        setTimeout(runPulse, 40); 
-    }
-
-    runPulse();
+    }, 30); 
 }
