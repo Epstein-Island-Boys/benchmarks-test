@@ -1,28 +1,31 @@
-function startRace() {
+async function startRace() {
+    const targets = ["tiktok.com", "discord.com", "instagram.com", "snapchat.com"];
     let i = 0;
-    const targets = ["tiktok.com", "instagram.com", "discord.com"];
 
-    setInterval(() => {
-        // 1. Pick a different target domain every time
-        let domain = targets[i % targets.length];
-
-        // 2. GENERATE A RANDOM SUBDOMAIN
-        // This is the "secret sauce." If you go to a.google.com then b.google.com,
-        // Chrome treats them as separate DNS/logic events, bypassing the cache.
-        let sub = Math.random().toString(36).substring(2, 5);
-
-        // 3. ADD RANDOM "NOISE" CHARACTERS
-        // We use symbols that are expensive for the extension's regex to parse.
-        let noise = Array.from({length: 20}, () => 
-            String.fromCharCode(33 + Math.random() * 94)).join('');
-
-        // 4. THE URL CONSTRUCTION
-        // By changing the subdomain AND the path, Chrome can't "throttle" the load.
-        let freshUrl = `https://${sub}.${domain}/?cache_bust=${Date.now()}&noise=${encodeURIComponent(noise)}`;
-
-        // Use window.location.href instead of replace to force a hard state change
-        window.location.href = freshUrl;
+    // The "Engine" - Using a recursive async function to bypass interval throttling
+    async function runPulse() {
+        const domain = targets[i % targets.length];
         
+        // 1. Generate a massive, high-entropy string
+        const entropy = Array.from({length: 100}, () => 
+            Math.random().toString(36)).join('-');
+
+        // 2. The "Deep Path" Attack
+        // Extensions often struggle with very long directory paths
+        const deepPath = "/security/audit/test/".repeat(20);
+
+        const testUrl = `https://test-${Math.random().toString(36).substring(7)}.${domain}${deepPath}?data=${entropy}`;
+
+        // 3. Trigger the navigation
+        // We use .replace() to keep the browser from getting stuck in history-loop lag
+        window.location.replace(testUrl);
+
         i++;
-    }, 75); // Slightly slower interval allows the "Fresh" load to actually hit the CPU
+
+        // 4. The "Pulse" - using a tiny timeout to keep the CPU pinned
+        // but allowing just enough time for the Extension to register the event.
+        setTimeout(runPulse, 40); 
+    }
+
+    runPulse();
 }
