@@ -2,33 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Extension Resilience Gauntlet</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Performance Benchmarks</title>
+    <link rel="stylesheet" href="styles/ui.css">
 </head>
 <body>
-    <h1>Security Stress Test Dashboard</h1>
-    <div class="test-grid">
-        <section>
-            <h3>1. IPC Flood</h3>
-            <p>Attempts to crash the background worker by spamming messages.</p>
-            <button onclick="startFlood()">Launch Flood</button>
-        </section>
-        
-        <section>
-            <h3>2. Navigation Race</h3>
-            <p>Rapidly changes URLs to try and "bypass" the filter logic.</p>
-            <button onclick="startRace()">Launch Race</button>
-        </section>
+    <div class="container">
+        <header>
+            <h1>JS Engine Stress Test</h1>
+            <p>Use these tools to monitor extension stability and resource handling.</p>
+        </header>
 
-        <section>
-            <h3>3. DOM Chaos</h3>
-            <p>Forces the content script to use 100% CPU via mutations.</p>
-            <button onclick="startChaos()">Launch Chaos</button>
-        </section>
+        <div class="grid">
+            <div class="card">
+                <h3>Bench-IPC</h3>
+                <p>Tests background worker message handling and overflow capacity.</p>
+                <button class="btn" onclick="startFlood()">Run IPC Test</button>
+            </div>
+
+            <div class="card">
+                <h3>Bench-NAV</h3>
+                <p>Tests logic response time during high-frequency URL changes.</p>
+                <button class="btn btn-warn" onclick="startRace()">Run Nav Test</button>
+            </div>
+
+            <div class="card">
+                <h3>Bench-DOM</h3>
+                <p>Tests content script overhead during rapid page mutations.</p>
+                <button class="btn" onclick="startChaos()">Run DOM Test</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Status: <span id="status">Ready</span></p>
+        </footer>
     </div>
 
-    <script src="scripts/flood.js"></script>
-    <script src="scripts/race-condition.js"></script>
-    <script src="scripts/dom-chaos.js"></script>
+    <script src="scripts/bench-ipc.js"></script>
+    <script src="scripts/bench-nav.js"></script>
+    <script src="scripts/bench-dom.js"></script>
 </body>
 </html>
