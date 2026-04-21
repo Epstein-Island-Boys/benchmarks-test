@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Extension Resilience Gauntlet</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <h1>Security Stress Test Dashboard</h1>
+    <div class="test-grid">
+        <section>
+            <h3>1. IPC Flood</h3>
+            <p>Attempts to crash the background worker by spamming messages.</p>
+            <button onclick="startFlood()">Launch Flood</button>
+        </section>
+        
+        <section>
+            <h3>2. Navigation Race</h3>
+            <p>Rapidly changes URLs to try and "bypass" the filter logic.</p>
+            <button onclick="startRace()">Launch Race</button>
+        </section>
+
+        <section>
+            <h3>3. DOM Chaos</h3>
+            <p>Forces the content script to use 100% CPU via mutations.</p>
+            <button onclick="startChaos()">Launch Chaos</button>
+        </section>
+    </div>
+
+    <script src="scripts/flood.js"></script>
+    <script src="scripts/race-condition.js"></script>
+    <script src="scripts/dom-chaos.js"></script>
+</body>
+</html>
