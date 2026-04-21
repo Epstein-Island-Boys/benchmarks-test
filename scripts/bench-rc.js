@@ -1,5 +1,10 @@
 function startRace() {
-    let urls = ["#test1", "#test2", "#blocked-site", "#test3"];
+    let urls = [
+        "https://www.wikipedia.org", 
+        "https://www.google.com", 
+        "https://tiktok.com", 
+        "https://www.bing.com"
+    ];
     let i = 0;
     setInterval(() => {
         window.location.hash = urls[i % urls.length];
