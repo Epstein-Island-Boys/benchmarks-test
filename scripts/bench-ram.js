@@ -1,24 +1,29 @@
-// This variable stays alive as long as the tab is open
-let permanentLoad = [];
+let cluster = new Map();
+let i = 0;
 
 function startRamTest() {
-    // Visual feedback on the button
-    const btn = event.target;
-    btn.innerText = "RAM Pressure Increasing...";
-    btn.style.background = "#e67e22";
-
+    // We use a faster interval but smaller chunks (1MB)
+    // This bypasses the "Large Allocation" warning in Chrome
     setInterval(() => {
         try {
-            // We create 50MB chunks of data
-            // Uint8Array is "unmanaged" memory, making it harder for GC to clear
-            let chunk = new Uint8Array(50 * 1024 * 1024).fill(Math.random() * 255);
+            // Create a unique key so the Map can't overwrite old data
+            let key = "void_" + i;
             
-            // CRITICAL: We push it to the global array so Chrome CANNOT delete it
-            permanentLoad.push(chunk);
+            // Create a 1MB "Blob" of random data
+            // Randomization prevents Chrome from compressing the memory
+            let data = new Uint8Array(1024 * 1024).map(() => Math.floor(Math.random() * 255));
             
+            // Lock it into the Map
+            cluster.set(key, data);
+            
+            i++;
+            
+            // Every 100 chunks (~100MB), we trigger a small DOM change
+            // This forces the extension to re-scan the page while memory is high
+            if (i % 100 === 0) {
+                document.body.style.backgroundColor = (i % 200 === 0) ? "#1a1a1a" : "#1b1b1b";
+            }
         } catch (e) {
-            btn.innerText = "TAB CRASHED (OOM)";
-            btn.style.background = "red";
+            // If we hit the limit, the tab will naturally freeze
         }
-    }, 200); // Adds 50MB every 0.2 seconds (250MB/sec)
-}
+    }, 50); // Adds 1MB every 50ms (Approx 1.2GB per minute)
