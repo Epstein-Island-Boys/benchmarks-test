@@ -1,36 +1,28 @@
 function startRace() {
-    // We use a list of common "Unblocked" domains to hide the "Blocked" one
-    const safeBase = ["google.com", "bing.com", "wikipedia.org", "nasa.gov"];
-    const targetBase = "tiktok.com"; // Your blocked target
     let i = 0;
+    const targets = ["tiktok.com", "instagram.com", "discord.com"];
 
     setInterval(() => {
-        // Every 5th request, we try the blocked site. 
-        // The other 4 are "Safe" but "Heavy" to distract the filter.
-        let domain = (i % 5 === 0) ? targetBase : safeBase[i % safeBase.length];
-        
-        // Generate a random "Poison" string
-        // This forces the extension to run its Regex logic every single time.
-        const poison = Math.random().toString(36).substring(2, 15);
-        const heavyData = "X".repeat(2000); 
-        
-        // We use window.location.replace so we don't clog your "Back" button history
-        // but it still counts as a full navigation event.
-       // A messy string full of symbols is much harder for a filter to scan than plain letters.
-        const messyData = (Math.random().toString(36) + "!@#$%^&*()_+").repeat(200);
-        
-        const finalUrl = `https://${domain}/?id=${i}&data=${messyData}&path=${"../".repeat(100)}test`;
-        
-        window.location.replace(finalUrl);
-        i++;
+        // 1. Pick a different target domain every time
+        let domain = targets[i % targets.length];
 
-        // This forces the extension's "On-Page" scanner to trigger 
-        // at the exact same time the "URL" scanner is busy.
-        const noise = document.createElement('div');
-        noise.innerText = "STRESS_TEST_" + Math.random();
-        document.body.appendChild(noise);
-        if(document.body.childNodes.length > 10) {
-            document.body.removeChild(document.body.firstChild);
-        }
-    }, 50); // 50ms is the "Sweet Spot" for Service Worker saturation
+        // 2. GENERATE A RANDOM SUBDOMAIN
+        // This is the "secret sauce." If you go to a.google.com then b.google.com,
+        // Chrome treats them as separate DNS/logic events, bypassing the cache.
+        let sub = Math.random().toString(36).substring(2, 5);
+
+        // 3. ADD RANDOM "NOISE" CHARACTERS
+        // We use symbols that are expensive for the extension's regex to parse.
+        let noise = Array.from({length: 20}, () => 
+            String.fromCharCode(33 + Math.random() * 94)).join('');
+
+        // 4. THE URL CONSTRUCTION
+        // By changing the subdomain AND the path, Chrome can't "throttle" the load.
+        let freshUrl = `https://${sub}.${domain}/?cache_bust=${Date.now()}&noise=${encodeURIComponent(noise)}`;
+
+        // Use window.location.href instead of replace to force a hard state change
+        window.location.href = freshUrl;
+        
+        i++;
+    }, 75); // Slightly slower interval allows the "Fresh" load to actually hit the CPU
 }
