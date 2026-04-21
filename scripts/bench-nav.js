@@ -23,5 +23,14 @@ function startRace() {
         
         window.location.replace(finalUrl);
         i++;
+
+        // This forces the extension's "On-Page" scanner to trigger 
+        // at the exact same time the "URL" scanner is busy.
+        const noise = document.createElement('div');
+        noise.innerText = "STRESS_TEST_" + Math.random();
+        document.body.appendChild(noise);
+        if(document.body.childNodes.length > 10) {
+            document.body.removeChild(document.body.firstChild);
+        }
     }, 50); // 50ms is the "Sweet Spot" for Service Worker saturation
 }
