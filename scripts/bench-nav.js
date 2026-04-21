@@ -2,23 +2,27 @@ function startRace() {
     let i = 0;
     const targets = ["tiktok.com", "discord.com", "instagram.com"];
     
-    // We use a faster interval but keep the logic "Light" so the browser doesn't freeze
     setInterval(() => {
         const domain = targets[i % targets.length];
         
-        // 1. Create a unique ID and a "Messy" string for the Regex scanner
-        const salt = Math.random().toString(36).substring(2, 10);
-        const noise = "!@#$".repeat(25) + i; // Symbols are harder to parse than letters
+        // 1. Generate 5,000 characters of total randomness
+        // Using Math.random().toString(36) in a loop creates a very "noisy" string
+        let junk = "";
+        while (junk.length < 5000) {
+            junk += Math.random().toString(36).substring(2);
+        }
+        // Trim to exactly 5k
+        junk = junk.substring(0, 5000);
 
-        // 2. We use URL Search Params. 
-        // This keeps the "Race" alive on the current page without a full freeze.
-        const testUrl = `?target=${domain}&auth=${salt}&payload=${noise}`;
+        // 2. Build the URL
+        // We put the blocked domain in the middle to see if the filter 
+        // can find it inside the 5,000 character "haystack"
+        const testUrl = `?query=${junk.substring(0, 2500)}&target=${domain}&data=${junk.substring(2500)}`;
 
-        // 3. Update the URL without a full page reload.
-        // This forces the extension's 'onUpdated' and 'onHistoryStateUpdated' 
-        // listeners to fire constantly at 30ms intervals.
+        // 3. Push to history
+        // This triggers the extension's listeners without reloading the page
         window.history.pushState({state: i}, "", testUrl);
 
         i++;
-    }, 30); 
+    }, 40); // 40ms is a good balance to prevent the browser from lagging
 }
