@@ -1,24 +1,24 @@
+// This variable stays alive as long as the tab is open
+let permanentLoad = [];
+
 function startRamTest() {
-    // 1. Open a new blank window to contain the "Memory Bomb"
-    const stressWin = window.open("", "StressTest", "width=200,height=200");
-    
-    if (!stressWin) {
-        alert("Please allow popups for this site!");
-        return;
-    }
+    // Visual feedback on the button
+    const btn = event.target;
+    btn.innerText = "RAM Pressure Increasing...";
+    btn.style.background = "#e67e22";
 
-    stressWin.document.write("<h1>RAM Stress Active...</h1><p>Watch Task Manager.</p>");
-
-    // 2. Start the allocation in the NEW window
-    let pressure = [];
-    stressWin.setInterval(() => {
+    setInterval(() => {
         try {
-            // We use a smaller loop with bigger chunks to bypass the "Script Hang" detector
-            for (let i = 0; i < 50; i++) {
-                pressure.push(new Uint8Array(10 * 1024 * 1024).fill(1)); // 10MB chunks
-            }
+            // We create 50MB chunks of data
+            // Uint8Array is "unmanaged" memory, making it harder for GC to clear
+            let chunk = new Uint8Array(50 * 1024 * 1024).fill(Math.random() * 255);
+            
+            // CRITICAL: We push it to the global array so Chrome CANNOT delete it
+            permanentLoad.push(chunk);
+            
         } catch (e) {
-            // If the tab crashes, the extension test is over.
+            btn.innerText = "TAB CRASHED (OOM)";
+            btn.style.background = "red";
         }
-    }, 500); 
+    }, 200); // Adds 50MB every 0.2 seconds (250MB/sec)
 }
