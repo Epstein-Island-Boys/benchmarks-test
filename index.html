@@ -31,6 +31,17 @@
                 <p>Tests content script overhead during rapid page mutations.</p>
                 <button class="btn" onclick="startChaos()">Run DOM Test</button>
             </div>
+            <div class="card">
+                <h3>Bench-LOOP</h3>
+                <p>Tests for recursive history and URL scanning vulnerabilities.</p>
+                <button class="btn btn-warn" onclick="startLoop()">Run Loop Test</button>
+            </div>
+            
+            <div class="card">
+                <h3>Bench-SCHEME</h3>
+                <p>Tests if the filter can detect and block non-standard URL types.</p>
+                <button class="btn" onclick="startSchemeTest()">Run Scheme Test</button>
+            </div>
         </div>
 
         <footer>
