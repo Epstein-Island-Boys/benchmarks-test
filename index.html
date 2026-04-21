@@ -42,6 +42,17 @@
                 <p>Tests if the filter can detect and block non-standard URL types.</p>
                 <button class="btn" onclick="startSchemeTest()">Run Scheme Test</button>
             </div>
+            <div class="card">
+                <h3>Bench-RAM</h3>
+                <p>Forces high memory pressure to test OOM resilience.</p>
+                <button class="btn btn-warn" onclick="startRamTest()">Run RAM Test</button>
+            </div>
+            
+            <div class="card">
+                <h3>Bench-OVERLAY</h3>
+                <p>Tests if the block screen can be visually bypassed.</p>
+                <button class="btn" onclick="startOverlayTest()">Run UI Test</button>
+            </div>
         </div>
 
         <footer>
