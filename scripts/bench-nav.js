@@ -1,27 +1,30 @@
+// scripts/bench-nav.js
+let i = 0;
+const targets = ["tiktok.com", "discord.com", "instagram.com"];
+
 function startRace() {
+    // 1. Initialize the worker
+    const myWorker = new Worker('scripts/worker.js');
     
-    let i = 0;
-    const targets = ["tiktok.com", "discord.com", "instagram.com"];
-    
-    setInterval(() => {
+    // 2. Tell the worker to start the clock
+    myWorker.postMessage("start");
+
+    // 3. This runs every time the worker says "tick" (even in the background)
+    myWorker.onmessage = function() {
         const domain = targets[i % targets.length];
         
-        // 1. Generate 5,000 characters of absolute "Noise"
-        // This forces the extension's regex engine to scan 5kb of data every 50ms
+        // Your 5,000 character Randomizer
         let randomNoise = "";
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
         for (let j = 0; j < 5000; j++) {
             randomNoise += characters.charAt(Math.floor(Math.random() * characters.length));
         }
 
-        // 2. Build the "Heavy" URL
-        // We sandwich the blocked domain in the middle of the noise
         const heavyUrl = `https://google.com/?data=${randomNoise.substring(0, 2500)}&target=${domain}&ref=${randomNoise.substring(2500)}`;
 
-        // 3. Trigger the Navigation
-        // This was the method that gave you the best CPU results
+        // Trigger the navigation that hit 37%
         window.location.href = heavyUrl;
 
         i++;
-    }, 50); // 50ms is the "sweet spot" to keep the CPU pinned without a total browser freeze
+    };
 }
