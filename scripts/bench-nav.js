@@ -1,9 +1,4 @@
 function startRace() {
-
-    // Create an invisible silent audio element
-    const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
-    silentAudio.loop = true;
-    silentAudio.play();
     
     let i = 0;
     const targets = ["tiktok.com", "discord.com", "instagram.com"];
