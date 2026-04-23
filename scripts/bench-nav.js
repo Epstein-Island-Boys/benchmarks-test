@@ -20,13 +20,23 @@ function startRace() {
     myWorker.onmessage = function() {
         const domain = targets[i % targets.length];
         
-        // --- 5,000 CHARACTER RANDOMIZER (The "Regex Trap") ---
-        // Generates high-entropy noise to force deep string inspection
+        // Your 5,000 character Randomizer
         let randomNoise = "";
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
         for (let j = 0; j < 5000; j++) {
             randomNoise += characters.charAt(Math.floor(Math.random() * characters.length));
         }
+    
+        // Instead of a full https://google.com URL, we use a relative path.
+        // This updates the address bar but KEEPS YOUR SCRIPT RUNNING.
+        const heavyParams = `?data=${randomNoise.substring(0, 2500)}&target=${domain}&ref=${randomNoise.substring(2500)}`;
+    
+        // This is the key: It changes the URL but doesn't "Navigate" away,
+        // so Chrome won't put you in a "time-out" and the script won't stop.
+        window.history.pushState({state: i}, "", heavyParams);
+    
+        i++;
+    };
 
         // --- URL CONSTRUCTION ---
         // We sandwich the domain in the middle of 5kb of noise.
