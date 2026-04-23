@@ -6,22 +6,19 @@ function startRace() {
     myWorker.postMessage("start");
 
     myWorker.onmessage = function() {
-        // --- 1. THE JAMMER ---
-        // This simulates 'System Lag' by pinning the tab's thread for a few ms.
-        // It makes the extension's job much harder.
-        const start = performance.now();
-        while (performance.now() - start < 10) { 
-            Math.sqrt(Math.random() * 10000); 
-        }
-
         const domain = targets[i % targets.length];
-        const junk = "A1B2C3D4E5".repeat(500); 
-        const salt = Math.random().toString(36).substring(2, 8);
+        
+        // We create a "Data Stack"
+        // This is a single, massive string of repeated domain keywords.
+        // This is much easier for the browser to build (low CPU) 
+        // but very hard for an extension to filter.
+        const dataStack = (domain + " ").repeat(1000);
+        const salt = Math.random().toString(36).substring(2, 10);
 
-        // --- 2. THE NAVIGATION ---
-        // We will use the Google URL again since you liked it, 
-        // but with the Jammer, it's 10x more stressful.
-        const testUrl = `https://www.google.com/search?q=${domain}&data=${junk}&v=${salt}`;
+        // We use a Data URI. This tells the browser: "The page IS this text."
+        // Most extensions have to scan the entire Data URI to ensure 
+        // it isn't a workaround for a blocked site.
+        const testUrl = `data:text/plain;base64,${btoa(dataStack)}#${salt}`;
 
         window.location.href = testUrl;
 
