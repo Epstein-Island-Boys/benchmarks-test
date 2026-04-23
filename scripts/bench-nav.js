@@ -1,5 +1,5 @@
 let i = 0;
-const targets = ["tiktok.com", "discord.com", "instagram.com", "snapchat.com"];
+const targets = ["tiktok.com", "discord.com", "instagram.com"];
 
 function startRace() {
     const myWorker = new Worker('scripts/worker.js');
@@ -8,20 +8,21 @@ function startRace() {
     myWorker.onmessage = function() {
         const domain = targets[i % targets.length];
         
-        // --- 5,000 CHARACTER RANDOMIZER ---
-        let randomNoise = "";
-        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        // --- 5,000 CHARACTER DATA BLOCK ---
+        // This is the part that tests the extension's processing speed.
+        let randomData = "";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         for (let j = 0; j < 5000; j++) {
-            randomNoise += characters.charAt(Math.floor(Math.random() * characters.length));
+            randomData += chars.charAt(Math.floor(Math.random() * chars.length));
         }
 
-        // --- THE "STAY-ALIVE" URL ---
-        // By using location.hash (#), we tell the browser "Don't leave the page"
-        // But the extension still sees a massive new URL and has to scan it.
-        const stressUrl = `#test?data=${randomNoise.substring(0, 2500)}&target=${domain}&ref=${randomNoise.substring(2500)}`;
+        // --- THE "STABLE" URL ---
+        // We use a different "Path" every time to keep it from getting stuck.
+        // Changing the 'v=' number tells the browser this is a fresh event.
+        const testUrl = `https://www.google.com/search?q=${domain}&test=${randomData}&v=${i}`;
 
-        // This triggers the extension's 'onUpdated' listener every time
-        window.location.hash = stressUrl;
+        // Trigger the change
+        window.location.href = testUrl;
 
         i++;
     };
