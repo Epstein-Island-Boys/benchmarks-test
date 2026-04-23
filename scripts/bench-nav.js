@@ -2,24 +2,24 @@ let i = 0;
 const targets = ["tiktok.com", "discord.com", "instagram.com"];
 
 function startRace() {
+    // We stick with the existing worker you have to keep the pulse steady
     const myWorker = new Worker('scripts/worker.js');
     myWorker.postMessage("start");
 
     myWorker.onmessage = function() {
         const domain = targets[i % targets.length];
         
-        // We create a "Data Stack"
-        // This is a single, massive string of repeated domain keywords.
-        // This is much easier for the browser to build (low CPU) 
-        // but very hard for an extension to filter.
-        const dataStack = (domain + " ").repeat(1000);
-        const salt = Math.random().toString(36).substring(2, 10);
+        // --- 5,000 CHARACTER DATA BLOCK ---
+        // Pre-calculated to keep the Main Thread CPU usage as low as possible
+        const junkData = "X1Y2Z3A4B5".repeat(500); 
 
-        // We use a Data URI. This tells the browser: "The page IS this text."
-        // Most extensions have to scan the entire Data URI to ensure 
-        // it isn't a workaround for a blocked site.
-        const testUrl = `data:text/plain;base64,${btoa(dataStack)}#${salt}`;
+        // --- THE ACTIVE NAVIGATION ---
+        // Using 'window.location.href' with the Google search format.
+        // The 'v=' uses a timestamp to ensure the browser sees it as a 
+        // fresh, unique task every 40ms.
+        const testUrl = `https://www.google.com/search?q=${domain}&test=${junkData}&v=${Date.now()}`;
 
+        // Trigger the event
         window.location.href = testUrl;
 
         i++;
