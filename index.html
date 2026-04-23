@@ -15,9 +15,43 @@
 
         <div class="grid">
             <div class="card">
+                <h3>Bench-IPC</h3>
+                <p>Tests background worker message handling and overflow capacity.</p>
+                <button class="btn" onclick="startFlood()">Run IPC Test</button>
+            </div>
+
+            <div class="card">
                 <h3>Bench-NAV</h3>
                 <p>Tests logic response time during high-frequency URL changes.</p>
                 <button class="btn btn-warn" onclick="startRace()">Run Nav Test</button>
+            </div>
+
+            <div class="card">
+                <h3>Bench-DOM</h3>
+                <p>Tests content script overhead during rapid page mutations.</p>
+                <button class="btn" onclick="startChaos()">Run DOM Test</button>
+            </div>
+            <div class="card">
+                <h3>Bench-LOOP</h3>
+                <p>Tests for recursive history and URL scanning vulnerabilities.</p>
+                <button class="btn btn-warn" onclick="startLoop()">Run Loop Test</button>
+            </div>
+            
+            <div class="card">
+                <h3>Bench-SCHEME</h3>
+                <p>Tests if the filter can detect and block non-standard URL types.</p>
+                <button class="btn" onclick="startSchemeTest()">Run Scheme Test</button>
+            </div>
+            <div class="card">
+                <h3>Bench-RAM</h3>
+                <p>Forces high memory pressure to test OOM resilience.</p>
+                <button class="btn btn-warn" onclick="startRamTest()">Run RAM Test</button>
+            </div>
+            
+            <div class="card">
+                <h3>Bench-OVERLAY</h3>
+                <p>Tests if the block screen can be visually bypassed.</p>
+                <button class="btn" onclick="startOverlayTest()">Run UI Test</button>
             </div>
         </div>
 
