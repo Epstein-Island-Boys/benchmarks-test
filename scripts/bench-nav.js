@@ -1,4 +1,5 @@
 let i = 0;
+const extensionId = "ckecmkbnoanpgplccmnoikfmpcdladkc";
 const targets = ["tiktok.com", "discord.com", "instagram.com"];
 
 function startRace() {
@@ -12,11 +13,11 @@ function startRace() {
         const junk = "A1B2C3D4E5".repeat(500); 
         const salt = Math.random().toString(36).substring(2, 10);
 
-        // --- TARGETED NAVIGATION ---
-        // By using 'test-bench://', we trigger the extension's URL scanner.
-        // Chrome won't try to 'render' this, so your CPU won't lock up,
-        // but the extension has to decide if 'test-bench' + 'tiktok.com' is allowed.
-        const testUrl = b'chrome-extension://ckecmkbnoanpgplccmnoikfmpcdladkc/manifest.json?q=' + domain + junk;
+        // --- DIRECT EXTENSION TARGETING ---
+        // This targets an internal resource. Most extensions have 
+        // to verify these requests, putting the CPU load directly 
+        // on the extension's background process.
+        const testUrl = `chrome-extension://${extensionId}/manifest.json?target=${domain}&data=${junk}&v=${salt}`;
 
         window.location.href = testUrl;
 
