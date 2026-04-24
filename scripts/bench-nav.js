@@ -1,6 +1,4 @@
 let i = 0;
-// Replace this with your actual Extension ID
-const EXT_ID = "ckecmkbnoanpgplccmnoikfmpcdladkc";
 const targets = ["tiktok.com", "discord.com", "instagram.com"];
 
 function startRace() {
@@ -10,15 +8,17 @@ function startRace() {
     myWorker.onmessage = function() {
         const domain = targets[i % targets.length];
         
-        // High-entropy data string
+        // --- 5,000 CHARACTER DATA BLOCK ---
+        // Using a high-density string to ensure the extension has to 
+        // perform a deep scan of the URL.
         const junk = "A1B2C3D4E5".repeat(500); 
         const salt = Date.now();
 
-        // --- TARGETED INTERNAL NAVIGATION ---
-        // We navigate to a file that definitely exists inside the extension.
-        // We append the 'target' and 'junk' as query parameters.
-        // This forces the extension to analyze the request to its own files.
-        const testUrl = `chrome-extension://ckecmkbnoanpgplccmnoikfmpcdladkc/manifest.json?target=${domain}&data=${junk}&v=${salt}`;
+        // --- THE SELF-REFERENCING URL ---
+        // We stay on the current page (window.location.pathname) 
+        // but add the 'domain' and 'junk' as search parameters.
+        // This is a standard, valid web behavior that Chrome won't block.
+        const testUrl = `${window.location.pathname}?q=${domain}&data=${junk}&v=${salt}`;
 
         window.location.href = testUrl;
 
