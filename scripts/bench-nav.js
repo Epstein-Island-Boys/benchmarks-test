@@ -1,26 +1,27 @@
 let i = 0;
-const targets = ["tiktok.com", "discord.com", "instagram.com"];
 
 function startRace() {
     const myWorker = new Worker('scripts/worker.js');
     myWorker.postMessage("start");
 
     myWorker.onmessage = function() {
-        // Pattern Breaker: Every 50 iterations, we do a "Harder" change
-        // to wake up the extension's listeners.
-        const forceWake = (i % 50 === 0);
-        
-        for (let b = 0; b < 30; b++) {
-            const domain = targets[i % targets.length];
-            const junk = "A1B2C3D4E5".repeat(500);
-            const salt = Math.random().toString(36);
-
-            // Switching between 'search' and 'about' formats 
-            // keeps the extension's logic "fresh" and alert.
-            const path = forceWake ? "/about/" : "/search";
-            const url = `https://www.google.com${path}?q=${domain}&data=${junk}&v=${salt}`;
+        // We increase the burst to 50 for max intensity
+        for (let b = 0; b < 50; b++) {
+            // Generate a random-looking IP address
+            const r1 = Math.floor(Math.random() * 255);
+            const r2 = Math.floor(Math.random() * 255);
             
-            window.history.pushState({}, '', url);
+            // This URL looks like a direct server connection
+            // Extensions MUST scan these because they look like proxy bypasses.
+            const targetIp = `http://192.168.${r1}.${r2}`;
+            const junk = "X1Y2Z3".repeat(800); 
+            const salt = Date.now() + b;
+
+            // pushState keeps Chrome's CPU low (no reload)
+            // but it updates the address bar so the extension triggers.
+            const testUrl = `${targetIp}/?q=tiktok.com&data=${junk}&v=${salt}`;
+            
+            window.history.pushState({}, '', testUrl);
 
             i++;
         }
