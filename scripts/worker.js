@@ -1,19 +1,9 @@
 // scripts/worker.js
 self.onmessage = function(e) {
     if (e.data === "start") {
+        // Just a steady pulse to wake up the main script
         setInterval(() => {
-            // High-intensity data generation inside the worker
-            const junk = "A1B2C3D4E5".repeat(500);
-            const salt = Math.random().toString(36).substring(2, 10);
-            const domain = "instagram.com"; // Targeted keyword
-
-            // Firing the request directly from the Worker
-            // This bypasses the Main Thread entirely!
-            fetch(`https://www.google.com/search?q=${domain}&data=${junk}&v=${salt}`, {
-                mode: 'no-cors',
-                cache: 'no-store'
-            }).catch(() => {});
-            
-        }, 10); // Very fast pulse
+            self.postMessage("tick");
+        }, 15); // 15ms is fast but stable
     }
 };
