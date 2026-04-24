@@ -2,34 +2,23 @@ let i = 0;
 const targets = ["tiktok.com", "discord.com", "instagram.com"];
 
 function startRace() {
+    // We use your original lightweight worker
     const myWorker = new Worker('scripts/worker.js');
     myWorker.postMessage("start");
 
     myWorker.onmessage = function() {
-        // We use a high-speed loop of 'Extension Messages'
-        for (let b = 0; b < 30; b++) {
+        // We run a high-speed burst of "Virtual Navigations"
+        for (let b = 0; b < 40; b++) {
             const domain = targets[i % targets.length];
-            const junk = "A1B2C3D4E5".repeat(1000); 
-            const salt = Math.random().toString(36);
+            const junk = "A1B2C3D4E5".repeat(500);
+            const salt = Math.random().toString(36).substring(2, 10);
 
-            // 1. Trigger the Extension's internal message listener
-            // Even if the ID is wrong or the message is junk, the 
-            // Extension Service Worker has to wake up to check it.
-            try {
-                chrome.runtime.sendMessage({
-                    type: "URL_CHECK",
-                    url: `https://${domain}/?data=${junk}`,
-                    token: salt
-                }, () => {
-                    // We don't care about the response, 
-                    // we just want to force the 'Handshake'
-                    if (chrome.runtime.lastError) { /* ignore */ }
-                });
-            } catch (e) {
-                // If sendMessage is blocked, we fall back to a high-speed 
-                // localStorage event which the extension likely 'watches'
-                localStorage.setItem(`check_${b}`, junk + salt);
-            }
+            // This is the winner: It changes the URL without a page reload.
+            // Chrome's CPU stays low, but the Extension's 'onUpdated' 
+            // and 'URL Listeners' fire every single time.
+            const testUrl = `https://www.google.com/search?q=${domain}&data=${junk}&v=${salt}`;
+            
+            window.history.pushState({}, '', testUrl);
 
             i++;
         }
