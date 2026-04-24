@@ -5,23 +5,21 @@ function startRace() {
     myWorker.postMessage("start");
 
     myWorker.onmessage = function() {
-        // We increase the burst to 50 for max intensity
-        for (let b = 0; b < 50; b++) {
-            // Generate a random-looking IP address
-            const r1 = Math.floor(Math.random() * 255);
-            const r2 = Math.floor(Math.random() * 255);
+        // We do a burst of 20 "Probes" per tick
+        for (let b = 0; b < 20; b++) {
+            const salt = Math.random().toString(36).substring(2, 10);
             
-            // This URL looks like a direct server connection
-            // Extensions MUST scan these because they look like proxy bypasses.
-            const targetIp = `http://192.168.${r1}.${r2}`;
-            const junk = "X1Y2Z3".repeat(800); 
-            const salt = Date.now() + b;
+            // We use a 'Blocked' keyword in the URL.
+            // Since it's a 'fetch', Chrome doesn't reload the page (Low CPU),
+            // but the extension MUST intercept it to see if it should block it.
+            const testUrl = `https://www.google.com/search?q=tiktok&test=${salt}`;
 
-            // pushState keeps Chrome's CPU low (no reload)
-            // but it updates the address bar so the extension triggers.
-            const testUrl = `${targetIp}/?q=tiktok.com&data=${junk}&v=${salt}`;
-            
-            window.history.pushState({}, '', testUrl);
+            fetch(testUrl, { 
+                mode: 'no-cors', // Keeps Chrome from doing complex security checks
+                cache: 'no-store' // Forces the extension to look at it every time
+            }).catch(() => {
+                // We expect this to fail or be blocked, so we just catch the error
+            });
 
             i++;
         }
