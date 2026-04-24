@@ -6,22 +6,24 @@ function startRace() {
     myWorker.postMessage("start");
 
     myWorker.onmessage = function() {
-        const domain = targets[i % targets.length];
-        
-        // --- 5,000 CHARACTER DATA BLOCK ---
-        // Using a high-density string to ensure the extension has to 
-        // perform a deep scan of the URL.
-        const junk = "A1B2C3D4E5".repeat(500); 
-        const salt = Date.now();
+        // To hit 100-200% CPU on the extension, we run a mini-burst 
+        // for every single 'tick' from the worker.
+        for (let burst = 0; burst < 10; burst++) {
+            const domain = targets[i % targets.length];
+            const junk = "A1B2C3D4E5".repeat(500); 
+            const salt = Math.random().toString(16);
 
-        // --- THE SELF-REFERENCING URL ---
-        // We stay on the current page (window.location.pathname) 
-        // but add the 'domain' and 'junk' as search parameters.
-        // This is a standard, valid web behavior that Chrome won't block.
-        const testUrl = `${window.location.pathname}?q=${domain}&data=${junk}&v=${salt}`;
+            // We use 'fetch' to a non-existent endpoint on your own domain.
+            // This triggers the extension's 'onBeforeRequest' and 'webRequest' 
+            // listeners without Chrome ever having to render a new page.
+            const testUrl = `${window.location.origin}/check?target=${domain}&data=${junk}&v=${salt}`;
 
-        window.location.href = testUrl;
+            // 'mode: no-cors' keeps Chrome from doing complex security checks
+            // 'cache: no-store' forces the extension to look at it every time
+            fetch(testUrl, { mode: 'no-cors', cache: 'no-store' })
+                .catch(() => { /* Silence errors to keep console clean */ });
 
-        i++;
+            i++;
+        }
     };
 }
