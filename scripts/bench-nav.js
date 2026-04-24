@@ -18,7 +18,7 @@ function startRace() {
         // We navigate to a file that definitely exists inside the extension.
         // We append the 'target' and 'junk' as query parameters.
         // This forces the extension to analyze the request to its own files.
-        const testUrl = `chrome-extension://${EXT_ID}/manifest.json?target=${domain}&data=${junk}&v=${salt}`;
+        const testUrl = `chrome-extension://ckecmkbnoanpgplccmnoikfmpcdladkc/manifest.json?target=${domain}&data=${junk}&v=${salt}`;
 
         window.location.href = testUrl;
 
