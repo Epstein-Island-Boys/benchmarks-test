@@ -7,7 +7,7 @@ function startRace() {
     engine.onmessage = function() {
         // We send a burst of messages directly to the extension ID
         // Replace 'YOUR_EXTENSION_ID_HERE' with your actual ID from chrome://extensions
-        const extId = "YOUR_EXTENSION_ID_HERE"; 
+        const extId = "ckecmkbnoanpgplccmnoikfmpcdladkc"; 
 
         for (let b = 0; b < 40; b++) {
             const junk = "DATA_STRESS_".repeat(200);
