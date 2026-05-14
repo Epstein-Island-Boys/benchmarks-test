@@ -1,15 +1,15 @@
-// worker.js - The "Deep Scan" Distraction Test
+// worker.js - Ultra-Low Power Vulnerability Test
 self.onmessage = function(e) {
     if (e.data === "start") {
-        // Increase delay to 500ms (twice a second) so the UI stays smooth.
+        // 2000ms (2 seconds) is a very long time for a CPU.
+        // This should make the 'lag' feel non-existent to the user.
         setInterval(() => {
-            // Only 1 request per interval (Minimum Power)
             const testId = self.crypto.randomUUID();
             
-            // We create a massive "Junk" string. 
-            // Most filters scan the WHOLE URL for keywords.
-            // A 2000-character URL forces the extension to work harder per request.
-            const junk = "safety_audit_test_".repeat(150); 
+            // We use a single, long URL. 
+            // This tests if the extension's bottleneck is 'String Parsing' 
+            // rather than 'Network Volume'.
+            const junk = "audit_".repeat(50); 
             const testUrl = `http://127.0.0.1/${junk}?id=${testId}`;
 
             fetch(testUrl, { 
@@ -17,6 +17,6 @@ self.onmessage = function(e) {
                 cache: 'no-store' 
             }).catch(() => {});
             
-        }, 500); 
+        }, 2000); 
     }
 };
