@@ -4,7 +4,7 @@ self.onmessage = function(e) {
         // We use a small loop to ensure we aren't flooding the system bus,
         // but we keep the extension's 'onBeforeRequest' listener occupied.
         setInterval(() => {
-            for (let i = 0; i < 3; i++) { 
+            for (let i = 0; i < 2; i++) { 
                 const testId = self.crypto.randomUUID();
                 
                 // We use a specific URL structure that forced-extensions 
