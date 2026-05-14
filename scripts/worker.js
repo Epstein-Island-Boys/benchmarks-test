@@ -1,22 +1,17 @@
-// worker.js - Ultra-Low Power Vulnerability Test
+// worker.js - The "Manual Pulse" Test
 self.onmessage = function(e) {
-    if (e.data === "start") {
-        // 2000ms (2 seconds) is a very long time for a CPU.
-        // This should make the 'lag' feel non-existent to the user.
-        setInterval(() => {
-            const testId = self.crypto.randomUUID();
-            
-            // We use a single, long URL. 
-            // This tests if the extension's bottleneck is 'String Parsing' 
-            // rather than 'Network Volume'.
-            const junk = "audit_".repeat(50); 
-            const testUrl = `http://127.0.0.1/${junk}?id=${testId}`;
+    if (e.data === "pulse") {
+        // We only send 1 single request per click.
+        // This is the absolute minimum power possible.
+        const testId = self.crypto.randomUUID();
+        const junk = "verification_".repeat(20); 
+        const testUrl = `http://127.0.0.1/${junk}?id=${testId}`;
 
-            fetch(testUrl, { 
-                mode: 'no-cors', 
-                cache: 'no-store' 
-            }).catch(() => {});
-            
-        }, 2000); 
+        fetch(testUrl, { 
+            mode: 'no-cors', 
+            cache: 'no-store' 
+        }).catch(() => {});
+        
+        console.log("Pulse sent. Test the blocked site now.");
     }
 };
