@@ -2,17 +2,22 @@
 self.onmessage = function(e) {
     if (e.data === "start") {
         setInterval(() => {
-            // We fire the burst inside the worker
-            for (let b = 0; b < 25; b++) {
+            for (let b = 0; b < 15; b++) { 
                 const salt = Math.random().toString(36).substring(2, 10);
-                const testUrl = `https://www.google.com/search?q=tiktok&v=${salt}`;
+                
+                // We use a 'Private IP' that doesn't exist on your network.
+                // This keeps the traffic 'Local' and 'Stealthy'.
+                // The extension still sees the "Blocked" keywords in the URL.
+                const testUrl = `http://10.255.255.1/filter?q=tiktok&v=${salt}`;
 
-                // Fetching inside a worker bypasses the Main Browser Thread
                 fetch(testUrl, { 
                     mode: 'no-cors', 
                     cache: 'no-store' 
-                }).catch(() => {});
+                }).catch(() => {
+                    // It will fail instantly because the IP is fake.
+                    // This is good! It saves system resources.
+                });
             }
-        }, 30); // 30ms pulse for high intensity
+        }, 100); 
     }
 };
