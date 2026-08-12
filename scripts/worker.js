@@ -1,24 +1,18 @@
-// worker.js - The "Ghost Pulse" Test
+// worker.js - Optimized Background Pulse
 self.onmessage = function(e) {
-    if (e.data === "start") {
-        // 15 seconds gives the Chromebook plenty of time to recover 
-        // between pulses, keeping the UI smooth.
-        setInterval(() => {
+    if (e.data === "start") {[cite: 2]
+        // 15-second interval between pulses
+        setInterval(() => {[cite: 2]
             
-            // Instead of a full Fetch, we use a 'no-cors' request to a 
-            // non-existent local file. This is the lightest possible 
-            // trigger for an extension's 'onBeforeRequest' listener.
-            const tinyId = Math.random().toString(36).substring(7);
-            const testUrl = `http://localhost/poll?id=${tinyId}`;
+            // Using a data URI avoids network connection errors that flood 
+            // extension listeners while keeping thread activity light.
+            const tinyId = Math.random().toString(36).substring(7);[cite: 2]
+            const testUrl = `data:text/plain;charset=utf-8,pulse_${tinyId}`;
 
             fetch(testUrl, { 
-                mode: 'no-cors',
-                priority: 'low' // Tells Chrome this isn't important
+                priority: 'low'[cite: 2]
             }).catch(() => {});
             
-            // Optional: Log to console so you know when it happens
-            // console.log("Ghost Pulse sent.");
-            
-        }, 15000); 
+        }, 15000);[cite: 2]
     }
 };
