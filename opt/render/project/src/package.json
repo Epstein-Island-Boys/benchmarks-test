@@ -1,0 +1,13 @@
+{
+  "name": "Epstein-Island-Boys/benchmarks-test",
+  "version": "1.0.0",
+  "description": "A simple package",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Epstein-Island-Boys/benchmarks-test.git"
+  },
+  "keywords": [],
+  "author": "Triple T",
+  "license": "MIT"
+}   
