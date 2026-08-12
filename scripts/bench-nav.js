@@ -1,10 +1,23 @@
-// scripts/bench-nav.js
-function startRace() {
-    // Launching the worker engine
-    const engine = new Worker('scripts/worker.js');[cite: 1]
-    engine.postMessage("start");[cite: 1]
+// worker.js - Network Listener Stress Test
+self.onmessage = function(e) {
+    if (e.data === "start") {
+        
+        // Target a local port where a lightweight server is running
+        const targetHost = "http://127.0.0.1:8080";
+        
+        // Adjust interval (ms) and batchSize to test your extension's limits
+        const intervalMs = 100; // Fires 10 times per second
+        const batchSize = 5;    // Sends 5 concurrent requests per interval
 
-    // Clear the UI to keep Browser CPU at absolute minimum
-    document.body.innerHTML = "<h1>Worker Active. Stress Test Running...</h1>";[cite: 1]
-    console.log("Stress test moved to background thread.");[cite: 1]
-}
+        setInterval(() => {
+            for (let i = 0; i < batchSize; i++) {
+                const id = Math.random().toString(36).substring(7);
+                
+                fetch(`${targetHost}/test-intercept?id=${id}`, {
+                    mode: 'no-cors',
+                    priority: 'high'
+                }).catch(() => {});
+            }
+        }, intervalMs);
+    }
+};
